@@ -1,0 +1,134 @@
+filete is a tool to access book-swapping sites (currently Tauschticket and
+meinbuch-deinbuch.de) and automating tasks like e.g. to backup a user's book
+database or adding new books from a local database.
+
+Since these book-swapping sites are german sites the following tutorial
+sections are written in german.
+
+== Feedback ==
+
+Don't hesitate to send feedback, suggestions, patches  and code reviews to:
+
+    Georg Sauthoff
+    gsauthof@techfak.uni-bielefeld.de
+    gsauthof@sdf.lonestar.org
+
+
+== General ==
+
+Die allgemeine Hilfe:
+
+    $ ruby filete.rb --help
+
+Im folgenden werden die wichtigsten Funktionen beschrieben.
+
+== Backup ==
+
+Das eigene Bücherregal kann mit folgendem Aufruf lokal gesichert werden:
+
+    $ ruby filete.rb --ttlogin ttuser
+
+wobei ttuser eine Textdatei ist, welche die login-Daten für Tauschticket
+enthält, z.B.
+
+    $ cat ttuser
+    juser
+    jpassword
+
+(also erste Zeile Benutzername und zweite Zeile Passwort)
+
+Per default werden die Daten lokalen in einem neuen Unterverzeichnis 'tmp'
+gespeichert. Mit --temp path kann ein anderes Verzeichnis angegeben werden.
+
+Die Bilddateien werden bei der Sicherung mit berücksichtigt.
+
+Log-Meldungen werden auf den Bildschirm und in die Datei filete.log ausgegeben.
+
+== Browsing ==
+
+Der Inhalt der lokalen Datenbank wird mit folgenden Kommandos ausgegeben, z.B.
+zur Kontrolle der Daten:
+
+Komplettausgabe:
+
+    $ ruby filete.rb
+
+Nur die Bücher die 2008 eingestellt wurden:
+
+    $ ruby filete.rb --filter 2008
+
+Nur Bücher von Frisch oder Goethe die in 2004 eingestellt wurden:
+
+    $ ruby filete.rb --filter '(Frisch|Goethe).+2004'
+
+== Einstellen ==
+
+
+Die Bücher der lokalen Datenbank kann man mit folgendem Befehl bei
+meinbuch-deinbuch.de eintragen:
+
+    $ ruby filete.rb --mblogin mbuser
+
+wobei mbuser eine Textdatei mit den login-Daten für mbdb ist (Format siehe
+oben).
+
+Es werden alle lokalen Bücher eingetragen, inkl. den gesicherten Photos.
+
+Die Aktion kann auch mit einem Filter kombiniert werden, um eine eingeschränkte
+Menge von Büchern einzustellen, z.B. um die Funktion zu testen:
+
+    $ ruby filete.rb --mblogin mbuser --filter 'Mann ohne Eigenschaften'
+
+== Löschen ==
+
+Bücher auf tauschticket können einfach mit folgendem Befehl gelöscht werden:
+
+    $ ruby filete.rb --ttdelete ttuser
+
+Oder nur eine Teilmenge:
+
+    $ ruby filete.rb --ttdelete ttuser --filter '2010'
+
+Welche Bücher von einem Filter ausgewählt werden, kann mit weglassen der
+--ttdelete Option getestet werden.
+
+
+== Install ==
+
+Normalerweise sollte Ruby 1.8 oder 1.9 mit den zusätzlichen gems/Paketen
+mechanize und nokogiri reichen.
+
+Das Script wurde teilweise unter ruby 1.8 entwickelt und getestet, wobei auf
+Ubuntu Lucid teilweise Ruby-Interpreter-Segfaults auftraten.
+
+Das Script ist auch mit ruby 1.9.1 getestet. Auf Ubuntu Lucid kann man
+die benötigten Abhängigkeiten wie folgt installieren:
+
+Als root:
+
+    $ apt-get install ruby1.9.1 rubygems1.9.1 libnokogiri-ruby1.9.1 libopenssl-ruby1.9.1
+
+Als user im filete Arbeitsverzeichnis:
+
+    $ gem1.9.1 install net-http-persistent
+    $ git clone http://github.com/tenderlove/mechanize.git
+
+In den oben genannten Aufrufen muss man dann ruby durch
+
+    $ RUBYLIB=./mechanize/lib ruby1.9.1
+
+ersetzen.
+
+Das ist etwas umständlich weil das Ubuntu libwww-mechanize-ruby1.9.1 Paket auch
+noch einige Bugs enthält, die das Script triggert und gem1.9.1 install
+mechanize bei der Installation von der nokogiri-Abhängigkeit scheitert.
+
+== Bugs ==
+
+Das mapping zwischen tauschticket und mbdb-Kategorien (ttcats.rb) wurde
+automatisch generiert (mit mkttcats.rb) und manche Kategorien sind falsch
+zugeordnet.
+
+Sollte aber einfach zu fixen sein (ttcats.rb entsprechend editieren).
+
+
